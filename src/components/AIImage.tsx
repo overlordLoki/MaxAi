@@ -5,7 +5,7 @@ const AIImage: React.FC = () => {
     <div className="bg-white bg-opacity-20 backdrop-blur-sm p-6 rounded-lg w-3/4 h-3/4 flex flex-col">
       <h2 className="text-lg font-bold mb-4">Create an image from text prompt</h2>
       <textarea 
-        className="flex-grow p-4 rounded-lg bg-gray-200 mb-4"
+        className="flex-grow p-4 rounded-lg bg-opacity-10 bg-gray-200 mb-4"
         placeholder="Enter a prompt..."
       />
       <div className="flex justify-between mb-4">

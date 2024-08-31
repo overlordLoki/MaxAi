@@ -10,7 +10,7 @@ const AIChat: React.FC = () => {
       <div className="flex-grow bg-white bg-opacity-10 p-4 rounded-lg mb-4"></div>
       <div className="flex">
         <input 
-          className="flex-grow p-2 rounded-l-lg bg-gray-200"
+          className="flex-grow p-2 bg-opacity-10 rounded-l-lg bg-gray-200"
           placeholder="What would you like to know..."
         />
         <button className="px-6 py-2 bg-purple-700 text-white rounded-r-lg">Send</button>
