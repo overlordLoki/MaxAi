@@ -1,5 +1,4 @@
-// src/components/AIChat.tsx
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { chatApi } from '../api/chat_Api';
 
 interface Message {
@@ -7,27 +6,28 @@ interface Message {
   content: string;
 }
 
-const AIChat: React.FC = () => {
-  const [messages, setMessages] = useState<Message[]>([]);
+interface AIChatProps {
+  messages: Message[];
+  setMessages: React.Dispatch<React.SetStateAction<Message[]>>;
+}
+
+const AIChat: React.FC<AIChatProps> = ({ messages, setMessages }) => {
   const [inputValue, setInputValue] = useState<string>('');
   const [isLoading, setIsLoading] = useState<boolean>(false);
+
+  const chatContainerRef = useRef<HTMLDivElement>(null);
 
   const handleSendMessage = async () => {
     if (!inputValue.trim()) return;
 
-    // Add the user's message to the chat history
     const userMessage: Message = { role: 'user', content: inputValue };
-    const updatedMessages = [...messages, userMessage];
-    setMessages(updatedMessages);
+    setMessages((prevMessages) => [...prevMessages, userMessage]);
     setInputValue('');
     setIsLoading(true);
 
     try {
-      // Send the full conversation history to the API and get the AI's response
-      const aiResponse = await chatApi(updatedMessages);
+      const aiResponse = await chatApi([...messages, userMessage]);
       const assistantMessage: Message = { role: 'assistant', content: aiResponse };
-
-      // Add the AI's response to the chat history
       setMessages((prevMessages) => [...prevMessages, assistantMessage]);
     } catch (error) {
       console.error('Failed to send message:', error);
@@ -40,18 +40,52 @@ const AIChat: React.FC = () => {
     setMessages([]);
   };
 
+  // Function to detect code blocks (using triple backticks or other markers)
+  const renderMessageContent = (content: string) => {
+    const codeBlockRegex = /```([a-z]*)\n([\s\S]*?)```/g;
+
+    const parts = [];
+    let lastIndex = 0;
+
+    let match;
+    while ((match = codeBlockRegex.exec(content)) !== null) {
+      const [_fullMatch, language, code] = match;
+
+      if (match.index > lastIndex) {
+        parts.push(<span key={lastIndex}>{content.slice(lastIndex, match.index)}</span>);
+      }
+
+      parts.push(
+        <pre key={match.index} className="bg-gray-800 text-white p-4 rounded-lg my-2 overflow-x-auto">
+          <code className={`language-${language}`}>{code}</code>
+        </pre>
+      );
+
+      lastIndex = codeBlockRegex.lastIndex;
+    }
+
+    if (lastIndex < content.length) {
+      parts.push(<span key={lastIndex}>{content.slice(lastIndex)}</span>);
+    }
+
+    return parts;
+  };
+
   return (
-    <div className="bg-white bg-opacity-20 backdrop-blur-sm p-6 rounded-lg w-3/4 h-3/4 flex flex-col">
+    <div className="bg-white bg-opacity-20 backdrop-blur-sm p-6 rounded-lg flex flex-col h-full">
       <div className="flex justify-between items-center mb-4">
         <h2 className="text-lg font-bold">Chat</h2>
-        <button 
-          className="px-4 py-2 bg-pink-700 rounded" 
+        <button
+          className="px-4 py-2 bg-pink-700 rounded"
           onClick={handleClearChat}
         >
           Clear Chat
         </button>
       </div>
-      <div className="flex-grow bg-white bg-opacity-10 p-4 rounded-lg mb-4 overflow-y-auto">
+      <div
+        className="flex-grow bg-white bg-opacity-10 p-4 rounded-lg mb-4 overflow-y-auto"
+        ref={chatContainerRef}
+      >
         {messages.map((message, index) => (
           <div
             key={index}
@@ -59,7 +93,7 @@ const AIChat: React.FC = () => {
               message.role === 'user' ? 'bg-blue-500 text-white self-end' : 'bg-gray-300 text-black self-start'
             }`}
           >
-            {message.content}
+            {renderMessageContent(message.content)}
           </div>
         ))}
         {isLoading && <div className="text-gray-500">Thinking...</div>}
@@ -73,7 +107,7 @@ const AIChat: React.FC = () => {
           onKeyDown={(e) => e.key === 'Enter' && handleSendMessage()}
           disabled={isLoading}
         />
-        <button 
+        <button
           className="px-6 py-2 bg-purple-700 text-white rounded-r-lg"
           onClick={handleSendMessage}
           disabled={isLoading}
