@@ -1,7 +1,7 @@
 // src/api/Img_api.ts
 import axios from "axios";
 
-const API_BASE_URL = "http://localhost:8085"; // Replace with your actual API URL
+const API_BASE_URL = "https://staci.overlord-loki.com"; // Replace with your actual API URL
 
 export const fetchLatestPNG = async (): Promise<Blob> => {
   try {
