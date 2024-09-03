@@ -6,6 +6,8 @@ This project is a React-based web application that allows users to interact with
 
 This project is still in development. I am making this for my own personal. if runnning your own server you will need to download the backend. (middleware)
 
+Link to current Development: [MaxAi](https://dev.overlord-loki.com/)
+
 ## Features
 
 - **AI Chat**: Communicate with an AI assistant. The conversation history is retained in the chat window. The chatbox is resizable by dragging the bottom-right corner.
