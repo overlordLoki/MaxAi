@@ -1,16 +1,25 @@
-// src/api/Img_api.ts
 import axios from "axios";
 
-const API_BASE_URL = "https://art-dev.overlord-loki.com"; // Replace with your actual API URL
+const API_BASE_URL = "http://localhost:8088"; // Your backend URL
 
-export const fetchLatestPNG = async (): Promise<Blob> => {
+export const generateImage = async (prompt: string, steps: number) => {
   try {
-    const response = await axios.get(`${API_BASE_URL}/imggen`, {
-      responseType: 'blob'  // Important for handling binary data
+    const response = await axios.post(`${API_BASE_URL}/generate_image`, {
+      prompt,
+      steps
+    }, {
+      headers: {
+        "Content-Type": "application/json", // Set the content type
+        "Access-Control-Allow-Origin": "*"  // Set CORS policy (optional)
+      },
+      responseType: 'blob' // Expect a blob response for the image
     });
-    return response.data;
+
+    // Create a URL for the image blob
+    const imageUrl = URL.createObjectURL(response.data);
+    return imageUrl;
   } catch (error) {
-    throw new Error("Failed to fetch the latest PNG image.");
+    console.error("Error generating image:", error);
+    throw error;
   }
 };
-

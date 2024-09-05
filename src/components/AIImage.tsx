@@ -1,6 +1,5 @@
-// src/components/AIImage.tsx
 import React from "react";
-import { fetchLatestPNG } from "../api/Img_api";
+import { generateImage } from "../api/Img_api";
 
 interface AIImageProps {
   imageSrc: string | null;
@@ -8,14 +7,19 @@ interface AIImageProps {
 }
 
 const AIImage: React.FC<AIImageProps> = ({ imageSrc, setImageSrc }) => {
-
   const handleGenerateClick = async () => {
+    console.log("Generating image...");
+    const promptElement = document.querySelector("textarea") as HTMLTextAreaElement | null;
+    const stepsElement = document.querySelector("input[type='number']") as HTMLInputElement | null;
+    
+    const prompt = promptElement?.value || "";
+    const steps = parseInt(stepsElement?.value || "4");
+
     try {
-      const imageBlob = await fetchLatestPNG();
-      const imageUrl = URL.createObjectURL(imageBlob); // Create a URL for the blob
-      setImageSrc(imageUrl); // Set the global image state
+      const newImageSrc = await generateImage(prompt, steps);
+      setImageSrc(newImageSrc);
     } catch (error) {
-      console.error("Failed to fetch the latest image:", error);
+      console.error("Failed to generate image:", error);
     }
   };
 
