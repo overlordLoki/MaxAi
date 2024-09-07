@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { generateImage } from "../api/Img_api";
 
 interface AIImageProps {
@@ -7,11 +7,15 @@ interface AIImageProps {
 }
 
 const AIImage: React.FC<AIImageProps> = ({ imageSrc, setImageSrc }) => {
+  const [isLoading, setIsLoading] = useState(false);
+
   const handleGenerateClick = async () => {
+    setIsLoading(true); // Start loading
     console.log("Generating image...");
+    
     const promptElement = document.querySelector("textarea") as HTMLTextAreaElement | null;
     const stepsElement = document.querySelector("input[type='number']") as HTMLInputElement | null;
-    
+
     const prompt = promptElement?.value || "";
     const steps = parseInt(stepsElement?.value || "4");
 
@@ -20,6 +24,8 @@ const AIImage: React.FC<AIImageProps> = ({ imageSrc, setImageSrc }) => {
       setImageSrc(newImageSrc);
     } catch (error) {
       console.error("Failed to generate image:", error);
+    } finally {
+      setIsLoading(false); // Stop loading
     }
   };
 
@@ -60,14 +66,17 @@ const AIImage: React.FC<AIImageProps> = ({ imageSrc, setImageSrc }) => {
         <button 
           className="px-6 py-2 bg-purple-700 text-white rounded-lg"
           onClick={handleGenerateClick}
+          disabled={isLoading} // Disable button during loading
         >
-          Generate
+          {isLoading ? "Generating..." : "Generate"}
         </button>
       </div>
 
       {/* Right Column: Image Display */}
       <div className="flex items-center justify-center w-1/2 bg-gray-100 rounded-lg">
-        {imageSrc ? (
+        {isLoading ? (
+          <div className="spinner border-t-4 border-purple-700 rounded-full w-16 h-16 animate-spin"></div> // Loading spinner
+        ) : imageSrc ? (
           <img src={imageSrc} alt="Generated AI Image" className="max-w-full max-h-full" />
         ) : (
           <p className="text-gray-500">No image generated yet.</p>
