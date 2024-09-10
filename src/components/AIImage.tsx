@@ -73,13 +73,13 @@ const AIImage: React.FC<AIImageProps> = ({ imageSrc, setImageSrc }) => {
       </div>
 
       {/* Right Column: Image Display */}
-      <div className="flex items-center justify-center w-1/2 bg-gray-100 rounded-lg">
+      <div className="flex items-center justify-center w-1/2 bg-opacity-10 bg-gray-200 rounded-lg"> 
         {isLoading ? (
           <div className="spinner border-t-4 border-purple-700 rounded-full w-16 h-16 animate-spin"></div> // Loading spinner
         ) : imageSrc ? (
           <img src={imageSrc} alt="Generated AI Image" className="max-w-full max-h-full" />
         ) : (
-          <p className="text-gray-500">No image generated yet.</p>
+          <p className="text-gray-500 ">No image generated yet.</p>
         )}
       </div>
     </div>
