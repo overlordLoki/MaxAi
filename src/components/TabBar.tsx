@@ -1,3 +1,4 @@
+// src/components/TabBar.tsx
 import React from 'react';
 
 interface TabBarProps {

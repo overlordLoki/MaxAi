@@ -23,3 +23,32 @@ export const generateImage = async (prompt: string, steps: number) => {
     throw error;
   }
 };
+
+export const isAiOnline = async () => {
+  try {
+    const response = await axios.get(`${API_BASE_URL}/is_online`);
+    return response.data;
+  } catch (error) {
+    console.error("Error checking AI status:", error);
+    throw error;
+  }
+}
+
+export const uploadImage = async (file: File) => {
+  try {
+    const formData = new FormData();
+    formData.append('image', file);
+
+    const response = await axios.post(`${API_BASE_URL}/upload_image`, formData, {
+      headers: {
+        "Content-Type": "multipart/form-data", // Set the content type
+        "Access-Control-Allow-Origin": "*"  // Set CORS policy (optional)
+      }
+    });
+
+    return response.data;
+  } catch (error) {
+    console.error("Error uploading image:", error);
+    throw error;
+  }
+};

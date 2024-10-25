@@ -1,23 +1,33 @@
+// src/components/AIImage.tsx
 import React, { useState } from "react";
 import { generateImage } from "../api/Img_api";
 
 interface AIImageProps {
   imageSrc: string | null;
   setImageSrc: (imageSrc: string | null) => void;
+  prompt: string;
+  setPrompt: (prompt: string) => void;
+  steps: number;
+  setSteps: (steps: number) => void;
+  batchSize: number;
+  setBatchSize: (batchSize: number) => void;
+  width: number;
+  setWidth: (width: number) => void;
+  height: number;
+  setHeight: (height: number) => void;
+  sampler: string;
+  setSampler: (sampler: string) => void;
 }
 
-const AIImage: React.FC<AIImageProps> = ({ imageSrc, setImageSrc }) => {
+const AIImage: React.FC<AIImageProps> = ({
+  imageSrc, setImageSrc, prompt, setPrompt, steps, setSteps, 
+  batchSize, setBatchSize, width, setWidth, height, setHeight, 
+  sampler, setSampler
+}) => {
   const [isLoading, setIsLoading] = useState(false);
 
   const handleGenerateClick = async () => {
     setIsLoading(true); // Start loading
-    console.log("Generating image...");
-    
-    const promptElement = document.querySelector("textarea") as HTMLTextAreaElement | null;
-    const stepsElement = document.querySelector("input[type='number']") as HTMLInputElement | null;
-
-    const prompt = promptElement?.value || "";
-    const steps = parseInt(stepsElement?.value || "4");
 
     try {
       const newImageSrc = await generateImage(prompt, steps);
@@ -37,30 +47,58 @@ const AIImage: React.FC<AIImageProps> = ({ imageSrc, setImageSrc }) => {
         <textarea 
           className="flex-grow p-4 rounded-lg bg-opacity-10 bg-gray-200 mb-4"
           placeholder="Enter a prompt..."
+          value={prompt}
+          onChange={(e) => setPrompt(e.target.value)}
         />
         <div className="flex justify-between mb-4">
           <div className="flex space-x-2">
             <label>Sampler</label>
-            <select className="p-2 bg-gray-200 rounded-lg">
+            <select 
+              className="p-2 bg-gray-200 rounded-lg" 
+              value={sampler} 
+              onChange={(e) => setSampler(e.target.value)}
+            >
               <option>Euler</option>
+              <option>LMS</option>
+              <option>DPM++</option>
               {/* Add other samplers as needed */}
             </select>
           </div>
           <div className="flex space-x-2">
             <label>Steps</label>
-            <input type="number" className="p-2 w-16 bg-gray-200 rounded-lg" defaultValue={4} />
+            <input 
+              type="number" 
+              className="p-2 w-16 bg-gray-200 rounded-lg" 
+              value={steps} 
+              onChange={(e) => setSteps(Number(e.target.value))} 
+            />
           </div>
           <div className="flex space-x-2">
             <label>Batch</label>
-            <input type="number" className="p-2 w-16 bg-gray-200 rounded-lg" defaultValue={1} />
+            <input 
+              type="number" 
+              className="p-2 w-16 bg-gray-200 rounded-lg" 
+              value={batchSize} 
+              onChange={(e) => setBatchSize(Number(e.target.value))} 
+            />
           </div>
           <div className="flex space-x-2">
             <label>Width</label>
-            <input type="number" className="p-2 w-16 bg-gray-200 rounded-lg" defaultValue={1024} />
+            <input 
+              type="number" 
+              className="p-2 w-16 bg-gray-200 rounded-lg" 
+              value={width} 
+              onChange={(e) => setWidth(Number(e.target.value))} 
+            />
           </div>
           <div className="flex space-x-2">
             <label>Height</label>
-            <input type="number" className="p-2 w-16 bg-gray-200 rounded-lg" defaultValue={1024} />
+            <input 
+              type="number" 
+              className="p-2 w-16 bg-gray-200 rounded-lg" 
+              value={height} 
+              onChange={(e) => setHeight(Number(e.target.value))} 
+            />
           </div>
         </div>
         <button 
@@ -79,11 +117,12 @@ const AIImage: React.FC<AIImageProps> = ({ imageSrc, setImageSrc }) => {
         ) : imageSrc ? (
           <img src={imageSrc} alt="Generated AI Image" className="max-w-full max-h-full" />
         ) : (
-          <p className="text-gray-500 ">No image generated yet.</p>
+          <p className="text-gray-500">No image generated yet.</p>
         )}
       </div>
     </div>
   );
 };
+
 
 export default AIImage;

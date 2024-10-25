@@ -1,3 +1,4 @@
+// src/App.tsx
 import React, { useState } from 'react';
 import TabBar from './components/TabBar';
 import AIChat from './components/AIChat';
@@ -9,7 +10,6 @@ interface Message {
   role: 'user' | 'assistant';
   content: string;
 }
-
 const App: React.FC = () => {
   const [activeTab, setActiveTab] = useState('chat');
   
@@ -19,6 +19,14 @@ const App: React.FC = () => {
 
   const [chatWidth, setChatWidth] = useState<number>(800); // Default width
   const [chatHeight, setChatHeight] = useState<number>(600); // Default height
+
+  // Add state for AI image inputs
+  const [imagePrompt, setImagePrompt] = useState<string>(''); 
+  const [steps, setSteps] = useState<number>(4); 
+  const [batchSize, setBatchSize] = useState<number>(1); 
+  const [width, setWidth] = useState<number>(1024); 
+  const [height, setHeight] = useState<number>(1024); 
+  const [sampler, setSampler] = useState<string>('Euler'); 
 
   const handleMouseDown = (e: React.MouseEvent) => {
     const startX = e.clientX;
@@ -60,11 +68,27 @@ const App: React.FC = () => {
             ></div>
           </div>
         ) : (
-          <AIImage imageSrc={imageSrc} setImageSrc={setImageSrc} />
+          <AIImage 
+            imageSrc={imageSrc} 
+            setImageSrc={setImageSrc}
+            prompt={imagePrompt} 
+            setPrompt={setImagePrompt}
+            steps={steps}
+            setSteps={setSteps}
+            batchSize={batchSize}
+            setBatchSize={setBatchSize}
+            width={width}
+            setWidth={setWidth}
+            height={height}
+            setHeight={setHeight}
+            sampler={sampler}
+            setSampler={setSampler}
+          />
         )}
       </div>
     </div>
   );
 };
+
 
 export default App;

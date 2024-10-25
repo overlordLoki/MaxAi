@@ -1,3 +1,4 @@
+// src/components/AIChat.tsx
 import React, { useState, useRef } from 'react';
 import { chatApi } from '../api/chat_Api';
 
