@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const API_BASE_URL = "http://192.168.1.88:8088"; // Your backend URL
+const API_BASE_URL = "https://art_api.overlord-loki.com"; // Your backend URL
 
 export const generateImage = async (prompt: string, steps: number) => {
   try {
@@ -31,7 +31,6 @@ export const isAiOnline = async () => {
     // Access the `online` field within `response.data`
     return response.data.online === true;
   } catch (error) {
-    console.error("Error checking AI status:", error);
     return false; // Set to offline if there's an error
   }
 };
