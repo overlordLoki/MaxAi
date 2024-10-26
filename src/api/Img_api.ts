@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const API_BASE_URL = "http://localhost:8088"; // Your backend URL
+const API_BASE_URL = "http://192.168.1.88:8088"; // Your backend URL
 
 export const generateImage = async (prompt: string, steps: number) => {
   try {
