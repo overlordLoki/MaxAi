@@ -27,12 +27,14 @@ export const generateImage = async (prompt: string, steps: number) => {
 export const isAiOnline = async () => {
   try {
     const response = await axios.get(`${API_BASE_URL}/is_online`);
-    return response.data;
+    
+    // Access the `online` field within `response.data`
+    return response.data.online === true;
   } catch (error) {
     console.error("Error checking AI status:", error);
-    throw error;
+    return false; // Set to offline if there's an error
   }
-}
+};
 
 export const uploadImage = async (file: File) => {
   try {
