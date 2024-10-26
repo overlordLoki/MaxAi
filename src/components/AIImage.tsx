@@ -1,4 +1,3 @@
-// src/components/AIImage.tsx
 import React, { useState } from "react";
 import { generateImage } from "../api/Img_api";
 
@@ -17,23 +16,35 @@ interface AIImageProps {
   setHeight: (height: number) => void;
   sampler: string;
   setSampler: (sampler: string) => void;
+  isOnline: boolean; // New prop for AI status
+  checkAiStatus: () => Promise<void>; // Function to check AI status
 }
 
 const AIImage: React.FC<AIImageProps> = ({
   imageSrc, setImageSrc, prompt, setPrompt, steps, setSteps, 
   batchSize, setBatchSize, width, setWidth, height, setHeight, 
-  sampler, setSampler
+  sampler, setSampler, isOnline, checkAiStatus
 }) => {
   const [isLoading, setIsLoading] = useState(false);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null); // State for error message
 
   const handleGenerateClick = async () => {
+    if (!isOnline) {
+      // If AI is offline, display error message
+      setErrorMessage("AI is offline. Please check your connection.");
+      return;
+    }
+    
     setIsLoading(true); // Start loading
+    setErrorMessage(null); // Clear previous error message
 
     try {
       const newImageSrc = await generateImage(prompt, steps);
       setImageSrc(newImageSrc);
     } catch (error) {
       console.error("Failed to generate image:", error);
+      setErrorMessage("Failed to generate image. Please try again."); // Set error message on failure
+      await checkAiStatus(); // Check AI status again after failure
     } finally {
       setIsLoading(false); // Stop loading
     }
@@ -101,6 +112,7 @@ const AIImage: React.FC<AIImageProps> = ({
             />
           </div>
         </div>
+        {errorMessage && <p className="text-red-500">{errorMessage}</p>} {/* Display error message */}
         <button 
           className="px-6 py-2 bg-purple-700 text-white rounded-lg"
           onClick={handleGenerateClick}
@@ -123,6 +135,5 @@ const AIImage: React.FC<AIImageProps> = ({
     </div>
   );
 };
-
 
 export default AIImage;

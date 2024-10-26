@@ -1,32 +1,44 @@
-// src/App.tsx
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import TabBar from './components/TabBar';
 import AIChat from './components/AIChat';
 import AIImage from './components/AIImage';
+import { isAiOnline } from './api/Img_api'; // Import the API function
 
 import backgroundImage from './assets/background.png';
 
 interface Message {
-  role: 'user' | 'assistant';
+  role: 'user' | 'assistant' | 'system';
   content: string;
 }
+
 const App: React.FC = () => {
   const [activeTab, setActiveTab] = useState('chat');
-  
-  // Global state for chat and image
   const [messages, setMessages] = useState<Message[]>([]);
   const [imageSrc, setImageSrc] = useState<string | null>(null);
-
-  const [chatWidth, setChatWidth] = useState<number>(800); // Default width
-  const [chatHeight, setChatHeight] = useState<number>(600); // Default height
-
-  // Add state for AI image inputs
+  const [chatWidth, setChatWidth] = useState<number>(800);
+  const [chatHeight, setChatHeight] = useState<number>(600);
   const [imagePrompt, setImagePrompt] = useState<string>(''); 
   const [steps, setSteps] = useState<number>(4); 
   const [batchSize, setBatchSize] = useState<number>(1); 
   const [width, setWidth] = useState<number>(1024); 
   const [height, setHeight] = useState<number>(1024); 
   const [sampler, setSampler] = useState<string>('Euler'); 
+  const [isOnline, setIsOnline] = useState<boolean>(false); // State for AI status
+
+  // Function to check AI online status
+  const checkAiStatus = async () => {
+    try {
+      const status = await isAiOnline();
+      setIsOnline(status);
+    } catch (error) {
+      console.error("Error checking AI status:", error);
+      setIsOnline(false); // Set to offline if there's an error
+    }
+  };
+  // Initial check for AI status
+  useEffect(() => {
+    checkAiStatus();
+  }, []);
 
   const handleMouseDown = (e: React.MouseEvent) => {
     const startX = e.clientX;
@@ -53,7 +65,13 @@ const App: React.FC = () => {
       className="h-screen w-screen bg-cover bg-center flex flex-col"
       style={{ backgroundImage: `url(${backgroundImage})` }}
     >
-      <TabBar activeTab={activeTab} setActiveTab={setActiveTab} />
+      <TabBar 
+        activeTab={activeTab} 
+        setActiveTab={setActiveTab} 
+        isOnline={isOnline} 
+        checkAiStatus={checkAiStatus} // Pass the check function directly
+      />
+
       <div className="flex-grow flex justify-center items-center relative">
         {activeTab === 'chat' ? (
           <div
@@ -83,12 +101,13 @@ const App: React.FC = () => {
             setHeight={setHeight}
             sampler={sampler}
             setSampler={setSampler}
+            isOnline={isOnline} // Pass AI status
+            checkAiStatus={checkAiStatus} // Pass check function
           />
         )}
       </div>
     </div>
   );
 };
-
 
 export default App;

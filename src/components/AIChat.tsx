@@ -1,9 +1,8 @@
-// src/components/AIChat.tsx
 import React, { useState, useRef } from 'react';
 import { chatApi } from '../api/chat_Api';
 
 interface Message {
-  role: 'user' | 'assistant';
+  role: 'user' | 'assistant' | 'system';
   content: string;
 }
 
@@ -21,13 +20,18 @@ const AIChat: React.FC<AIChatProps> = ({ messages, setMessages }) => {
   const handleSendMessage = async () => {
     if (!inputValue.trim()) return;
 
+    const systemMessage: Message = {
+      role: 'system',
+      content: "Embrace your role as a creative illustrator. Based on a concept provided, you must produce a single paragraph with a multifaceted description of an image, ensuring significant details of the concept and more are represented in your instructions. Use short phrases and avoid complete sentences. Include details like the level of detail, artistic style, color palette, lighting, mood, perspective, setting, time of day, weather, season, time period, location, textures, patterns, brushstrokes, and rendering style. Keep the description concise under 250 words."
+    };
+
     const userMessage: Message = { role: 'user', content: inputValue };
     setMessages((prevMessages) => [...prevMessages, userMessage]);
     setInputValue('');
     setIsLoading(true);
 
     try {
-      const aiResponse = await chatApi([...messages, userMessage]);
+      const aiResponse = await chatApi([...messages, systemMessage, userMessage]);
       const assistantMessage: Message = { role: 'assistant', content: aiResponse };
       setMessages((prevMessages) => [...prevMessages, assistantMessage]);
     } catch (error) {
@@ -41,7 +45,6 @@ const AIChat: React.FC<AIChatProps> = ({ messages, setMessages }) => {
     setMessages([]);
   };
 
-  // Function to detect code blocks (using triple backticks or other markers)
   const renderMessageContent = (content: string) => {
     const codeBlockRegex = /```([a-z]*)\n([\s\S]*?)```/g;
 
